@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>nikahcerai</title>
+
+<style>
+#hey {
+    position: relative;
+}
+.bar {
+    position: absolute;
+    background-color: #ae81ff;
+}
+.label {
+    position: absolute;
+    transform: rotate(90deg);
+    transform-origin: 0% 100%;
+    font-size: 13px;
+}
+#info {
+    position: absolute;
+    right: 15px;
+}
+</style>
+
+</head>
+<body>
+<div id="hey"></div>
+<div id="info">
+    <p>lebih tinggi lebih besar<br>persentase cerai</p>
+    <p>lebih lebar lebih banyak<br>jumlah yg nikah</p>
+    <p>
+        sort by<br>
+        - <a href="javascript:;" onclick="render('cerai')">persentase cerai</a><br>
+        - <a href="javascript:;" onclick="render('nikah')">jumlah yg nikah</a><br>
+    </p>
+</div>
+
+<script>
+var data = [
+    ['ACEH',42049,40478,40565,4016,3775,4124],
+    ['SUMATERA UTARA',108371,100988,92935,8985,7806,8757],
+    ['SUMATERA BARAT',48017,44568,59515,6154,5564,6043],
+    ['RIAU',48399,43811,44547,9377,8306,8872],
+    ['JAMBI',33166,31036,28265,3232,2905,3244],
+    ['SUMATERA SELATAN',88628,78469,71799,6805,5965,6149],
+    ['BENGKULU',18874,16935,28265,2180,2091,2326],
+    ['LAMPUNG',90714,80531,71799,5447,4894,6168],
+    ['KEP. BANGKA BELITUNG',12240,11096,10100,2350,2048,1996],
+    ['DKI JAKARTA',62254,59935,57652,10365,9282,10431],
+    ['JAWA BARAT',489752,490174,460694,63139,60160,65848],
+    ['JAWA TENGAH',338330,355665,326932,73351,70769,72560],
+    ['DI YOGYAKARTA',26543,25920,24161,5441,5051,5598],
+    ['JAWA TIMUR',393731,360521,348653,91449,85484,89406],
+    ['BANTEN',110355,107263,98312,7091,7018,7831],
+    ['NUSA TENGGARA BARAT',54109,54025,56196,6215,5373,5708],
+    ['NUSA TENGGARA TIMUR',3668,3707,3775,364,301,290],
+    ['KALIMANTAN BARAT',30618,27805,24474,3874,3443,3778],
+    ['KALIMANTAN TENGAH',20803,19475,17888,2227,1952,2186],
+    ['KALIMANTAN SELATAN',39455,30500,30003,6287,6656,6781],
+    ['KALIMANTAN TIMUR',32184,37422,29729,7360,6365,6777],
+    ['SULAWESI UTARA',8353,8717,7412,1143,1086,1171],
+    ['SULAWESI TENGAH',22799,21416,21089,2362,2067,2403],
+    ['SULAWESI SELATAN',83426,76870,73890,11742,10690,11390],
+    ['SULAWESI TENGGARA',21276,20222,20616,1860,1736,1890],
+    ['MALUKU',7195,7767,7870,360,346,428],
+    ['MALUKU UTARA',7156,9725,8974,629,683,656],
+    ['PAPUA',4913,4876,4552,1485,1262,1426],
+]
+
+var extracted = [], min_nikah = 999999, max_nikah = -1, min_perc = 9, max_perc = -1
+data.forEach((v, i) => {
+    var nikah = 0, cerai = 0, perc
+    for (var i = 0; i < 3; i++) {
+        nikah += v[1+i]
+        cerai += v[4+i]
+    }
+    perc = cerai/nikah
+    extracted.push([v[0], nikah, perc])
+    if (nikah < min_nikah) min_nikah = nikah
+    if (nikah > max_nikah) max_nikah = nikah
+    if (perc < min_perc) min_perc = perc
+    if (perc > max_perc) max_perc = perc
+})
+
+var normalized = [], range_nikah = max_nikah-min_nikah, range_perc = max_perc-min_perc
+extracted.forEach((v, i) => {
+    var norm_nikah = (v[1]-min_nikah)/range_nikah
+    var norm_perc = (v[2]-min_perc)/range_perc
+    normalized.push([v[0], norm_nikah*(160-16)+16, norm_perc*(450-10)+10])
+})
+
+var hey = document.getElementById('hey')
+
+function render(jenis) {
+    var idx = jenis == 'nikah' ? 1 : 2
+    normalized.sort(function(a, b) {
+        return b[idx]-a[idx]
+    })
+
+    hey.innerHTML = ''
+    var left = 0
+    normalized.forEach((v, i) => {
+        var bar = document.createElement('div')
+        hey.appendChild(bar)
+        bar.setAttribute('class', 'bar')
+        bar.style.width = v[1]+'px'
+        bar.style.height = v[2]+'px'
+        bar.style.top = (451-v[2])+'px'
+        bar.style.left = left+'px'
+        var label = document.createElement('div')
+        hey.appendChild(label)
+        label.setAttribute('class', 'label')
+        label.textContent = v[0]
+        label.style.left = (left+((v[1]-16)/2))+'px'
+        label.style.top = 440+'px'
+        left = left+v[1]+2
+    })
+}
+render('cerai')
+</script>
+
+</body>
+</html>
